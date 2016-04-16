@@ -1,5 +1,5 @@
-# A sample Gemfile
 source "https://rubygems.org"
 
-gem "pry"
-gem "pg"
+gem 'activerecord', '4.2.6'
+gem 'activesupport'
+gem 'byebug'

@@ -1,30 +1,40 @@
-require_relative './contact'
+require 'active_record'
 require 'pg'
+require_relative './contact'
+require_relative './db' 
 
 
 def search_name_email(term)
-  Contact.search(term)
+  contacts = Contact.where("name LIKE '%#{term}%' OR email LIKE '%#{term}%'")
+  contacts.each {|contact| puts "#{contact.id}: #{contact.name}, #{contact.email}"}
 end
 
 def find_by_id(id)
-  found_con = Contact.find(id)
-  name = found_con.name
-  email = found_con.email
-  puts "#{name} #{email}"
+  contact = Contact.find(id)
+  puts "#{id}: #{contact.name}, #{contact.email}"
+end
+
+def create(name, email)
+  Contact.create(name: name, email: email)
 end
 
 def show_all_contact 
-  Contact.all
+  contacts = Contact.all
+  contacts.each {|contact| puts "#{contact.id}: #{contact.name}, #{contact.email}"}
 end 
 
 def update(id)
-  Contact.update(id)
+  puts id
+  hombre = Contact.find_by_id(id)
+  puts "Enter new name for #{hombre.name}"
+  name = STDIN.gets.chomp
+  hombre.name = name 
+  hombre.save
 end
 
 def delete(id)
   Contact.delete(id)
 end
-
 
 if ARGV == []
   puts "Here is a list of available commands"
@@ -35,16 +45,19 @@ if ARGV == []
   puts "delete - Delete contact"
 elsif ARGV[0] == "list" 
   show_all_contact
+
 elsif ARGV[0] == "new"
-  print "Enter first name and last name of the contact you would like to enter:"
+  print "Enter the name of the contact you would like to enter:"
   name = STDIN.gets.chomp 
   print "Enter email address of the contact you would like to enter:"
   email = STDIN.gets.chomp
-  Contact.create(name: name, email: email)
+  create(name, email)
+
 elsif ARGV[0] == "find" 
   puts "Enter the ID of the person you would like to seach for:"
   id = STDIN.gets.chomp
   find_by_id(id)
+
 elsif ARGV[0] == "search"
   term = ARGV[1]
   search_name_email(term)
